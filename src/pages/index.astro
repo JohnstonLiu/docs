@@ -74,7 +74,7 @@ const isExternal = (href: string) => href.startsWith("http");
           year: "numeric",
         });
         return (
-          <article class="group" key={post.id}>
+          <article class="group" {...{ key: post.id }}>
             <a
               class="flex items-center justify-between rounded-lg py-2 hover:bg-gray-100 dark:hover:bg-gray-900"
               href={postHref}
