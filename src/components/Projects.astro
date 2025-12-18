@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import ExternalLink from "@/components/ExternalLink.astro";
+
+const projects = await getCollection("projects");
+---
+
+<div class="grid list-none gap-2 p-0">
+  {
+    projects.map((project) => (
+      <ExternalLink href={project.data.href}>
+        {project.data.title}
+      </ExternalLink>
+    ))
+  }
+</div>
