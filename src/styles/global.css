@@ -7,6 +7,11 @@
   color-scheme: light dark;
   --font-sans: "Computer Modern Sans", "Times New Roman", serif;
   --font-mono: "Roboto Mono", "SFMono-Regular", Menlo, monospace;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .dark {
