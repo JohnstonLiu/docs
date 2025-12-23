@@ -1,16 +1,70 @@
 ---
 import { getCollection } from "astro:content";
-import ExternalLink from "@/components/ExternalLink.astro";
+import { formatDate } from "@/lib/util";
 
-const projects = await getCollection("projects");
+const projects = (await getCollection("projects")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
 ---
 
-<div class="grid list-none gap-2 p-0">
+<div class="mt-4 space-y-10">
   {
-    projects.map((project) => (
-      <ExternalLink href={project.data.href}>
-        {project.data.title}
-      </ExternalLink>
-    ))
+    projects.map((project) => {
+      const { title, subtitle, description, technologies, href, date, image } =
+        project.data;
+      const formattedDate = formatDate(date, {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+      const descriptionParagraphs = description
+        .trim()
+        .split(/\n\s*\n/)
+        .filter(Boolean);
+      return (
+        <article class="space-y-4" {...{ key: project.id }}>
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              <a
+                class="hover:underline"
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {title}
+              </a>
+            </h3>
+            <time class="text-sm text-gray-600 dark:text-gray-400">{formattedDate}</time>
+          </div>
+          {technologies.length > 0 && (
+            <ul class="flex flex-wrap gap-2">
+              {technologies.map((tech) => (
+                <li
+                  class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                >
+                  {tech}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p class="text-base font-medium text-gray-900 dark:text-white">{subtitle}</p>
+          <div class="space-y-3 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+            {descriptionParagraphs.map((paragraph, idx) => (
+              <p {...{ key: idx }}>{paragraph}</p>
+            ))}
+          </div>
+          {image && (
+            <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+              <img
+                src={image.src}
+                alt={`${title} preview`}
+                class="h-auto w-full object-contain"
+                loading="lazy"
+              />
+            </div>
+          )}
+        </article>
+      );
+    })
   }
 </div>

@@ -76,7 +76,7 @@ const isExternal = (href: string) => href.startsWith("http");
         return (
           <article class="group" {...{ key: post.id }}>
             <a
-              class="flex items-center justify-between rounded-lg py-2 hover:bg-gray-100 dark:hover:bg-gray-900"
+              class="flex items-center justify-between rounded-lg py-2 px-3 -mx-3 hover:bg-gray-100 dark:hover:bg-gray-900"
               href={postHref}
             >
               <h2 class="relative text-base font-medium text-gray-900 dark:text-white">
@@ -92,7 +92,7 @@ const isExternal = (href: string) => href.startsWith("http");
       })}
     </div>
     <h2 class="mt-12 text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
-      Projects
+      Projects (some aren't deployed anymore)
     </h2>
     <Projects />
   </div>

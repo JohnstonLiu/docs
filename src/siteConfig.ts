@@ -23,6 +23,6 @@ export const SOCIAL_LINKS: SocialLinks = {
   },
   linkedin: {
     label: "linkedin",
-    href: "https://linkedin.com/in/johnstonliu",
+    href: "https://linkedin.com/in/johnston-liu",
   },
 };
