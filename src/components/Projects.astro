@@ -3,7 +3,9 @@ import { getCollection } from "astro:content";
 import { formatDate } from "@/lib/util";
 
 const projects = (await getCollection("projects")).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+  (a, b) =>
+    Number(b.data.ongoing) - Number(a.data.ongoing) ||
+    b.data.date.valueOf() - a.data.date.valueOf(),
 );
 
 type DescriptionLink = {
@@ -58,6 +60,34 @@ const createDescriptionSegments = (
 
   return segments;
 };
+
+const formatProjectDate = (
+  date: Date,
+  endDate?: Date,
+  ongoing = false,
+): string => {
+  const startDate = formatDate(date, {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+  if (ongoing) {
+    return `${startDate} - Present`;
+  }
+
+  if (endDate) {
+    const formattedEndDate = formatDate(endDate, {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+
+    return `${startDate} - ${formattedEndDate}`;
+  }
+
+  return startDate;
+};
 ---
 
 <div class="mt-4 space-y-10">
@@ -71,13 +101,11 @@ const createDescriptionSegments = (
         technologies,
         href,
         date,
+        endDate,
+        ongoing,
         image,
       } = project.data;
-      const formattedDate = formatDate(date, {
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-      });
+      const formattedDate = formatProjectDate(date, endDate, ongoing);
       const descriptionParagraphs = description
         .trim()
         .split(/\n\s*\n/)
