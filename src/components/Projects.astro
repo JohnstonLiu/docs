@@ -5,13 +5,74 @@ import { formatDate } from "@/lib/util";
 const projects = (await getCollection("projects")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
+
+type DescriptionLink = {
+  text: string;
+  href: string;
+};
+
+type DescriptionSegment =
+  | string
+  | {
+      text: string;
+      href: string;
+    };
+
+const createDescriptionSegments = (
+  text: string,
+  links: DescriptionLink[],
+): DescriptionSegment[] => {
+  const activeLinks = links.filter((link) => link.text.length > 0);
+
+  if (activeLinks.length === 0) {
+    return [text];
+  }
+
+  const segments: DescriptionSegment[] = [];
+  let currentIndex = 0;
+
+  while (currentIndex < text.length) {
+    const nextMatch = activeLinks
+      .map((link) => ({
+        link,
+        index: text.indexOf(link.text, currentIndex),
+      }))
+      .filter((match) => match.index !== -1)
+      .sort((a, b) => a.index - b.index)[0];
+
+    if (!nextMatch) {
+      segments.push(text.slice(currentIndex));
+      break;
+    }
+
+    if (nextMatch.index > currentIndex) {
+      segments.push(text.slice(currentIndex, nextMatch.index));
+    }
+
+    segments.push({
+      text: nextMatch.link.text,
+      href: nextMatch.link.href,
+    });
+    currentIndex = nextMatch.index + nextMatch.link.text.length;
+  }
+
+  return segments;
+};
 ---
 
 <div class="mt-4 space-y-10">
   {
     projects.map((project) => {
-      const { title, subtitle, description, technologies, href, date, image } =
-        project.data;
+      const {
+        title,
+        subtitle,
+        description,
+        descriptionLinks,
+        technologies,
+        href,
+        date,
+        image,
+      } = project.data;
       const formattedDate = formatDate(date, {
         month: "long",
         year: "numeric",
@@ -49,9 +110,28 @@ const projects = (await getCollection("projects")).sort(
           )}
           <p class="text-base font-medium text-gray-900 dark:text-white">{subtitle}</p>
           <div class="space-y-3 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
-            {descriptionParagraphs.map((paragraph, idx) => (
-              <p {...{ key: idx }}>{paragraph}</p>
-            ))}
+            {descriptionParagraphs.map((paragraph, idx) => {
+              const segments = createDescriptionSegments(paragraph, descriptionLinks);
+
+              return (
+                <p {...{ key: idx }}>
+                  {segments.map((segment) =>
+                    typeof segment === "string" ? (
+                      segment
+                    ) : (
+                      <a
+                        class="font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 dark:text-white dark:hover:text-gray-400"
+                        href={segment.href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {segment.text}
+                      </a>
+                    ),
+                  )}
+                </p>
+              );
+            })}
           </div>
           {image && (
             <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
