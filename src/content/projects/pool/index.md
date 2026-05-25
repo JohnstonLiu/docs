@@ -1,6 +1,7 @@
 ---
 title: Pool
-date: 2025-11-01
+date: 2025-10-01
+endDate: 2025-11-30
 technologies:
   - Next.js (React)
   - Go

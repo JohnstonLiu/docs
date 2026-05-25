@@ -1,6 +1,7 @@
 ---
 title: Kai Class
-date: 2025-03-01
+date: 2025-02-01
+endDate: 2025-04-30
 technologies:
   - React + React Router & Vite
   - TypeScript (Express)
